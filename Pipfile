@@ -13,7 +13,7 @@ yfinance = "*"
 matplotlib = "*"
 streamlit-option-menu = "*"
 pyportfolioopt = "*"
-cufflinks= "*
+cufflinks= "*"
 
 [dev-packages]
 
