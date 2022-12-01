@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from streamlit_option_menu import option_menu
-from PIL import Image
 from datetime import datetime
 import matplotlib.pyplot as plt
 import yfinance as yf
@@ -177,12 +175,11 @@ st.set_page_config(
     page_title="EQUIFOLIO.AI"
 )
 
-logo_img = Image.open('data\img\equifolio_logo.png')
 
 col1, col2 = st.columns([0.6, 1], gap='small')
 
 with col1:
-    st.image(logo_img, width = 220)
+    st.image('https://github.com/mach-12/equifolio.ai-/blob/main/data/img/equifolio_logo.png?raw=True', width = 220)
 with col2:
     st.title("EquiFolio.ai")
     st.header("Your AI stock portfolio")
@@ -202,7 +199,7 @@ with st.expander("More info"):
         port = generate_portfolio(port_val1, 2)
         # st.write()
         st.write(port)
-    st.image("data\img\deep_blue.png")
+    st.image("https://github.com/mach-12/equifolio.ai-/blob/main/data/img/deep_blue.png?raw=True")
 
 st.header('🗠 Dynamic Green')
 st.markdown('Moderate Risk Moderate Return')
@@ -217,4 +214,4 @@ with st.expander("More info"):
         # st.write()
         st.write(port)
 
-    st.image("data\img\dynamic_green.png")
+    st.image("https://github.com/mach-12/equifolio.ai-/blob/main/data/img/dynamic_green.png?raw=True")

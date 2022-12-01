@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-from streamlit_option_menu import option_menu
-from PIL import Image
 import cufflinks as cf
 import yfinance as yf
 import datetime
@@ -11,12 +9,11 @@ st.set_page_config(
     page_title="EQUIFOLIO.AI"
 )
 
-logo_img = Image.open('data\img\equifolio_logo.png')
 
 col1, col2 = st.columns([0.6, 1], gap='small')
 
 with col1:
-    st.image(logo_img, width = 220)
+    st.image('https://github.com/mach-12/equifolio.ai-/blob/main/data/img/equifolio_logo.png?raw=True', width = 220)
 with col2:
     st.title("EquiFolio.ai")
     st.header("Your AI stock portfolio")
@@ -30,7 +27,7 @@ with st.container():
   end_date = st.date_input("End date", datetime.date(2021, 1, 31))
 
 # Retrieving tickers data
-  ticker_list = pd.read_csv('data\img\Stocks.csv')
+  ticker_list = pd.read_csv('https://github.com/mach-12/equifolio.ai-/blob/main/data/img/Stocks.csv?raw=True')
   tickerSymbol = st.selectbox('Stock ticker', ticker_list) # Select ticker symbol
 
 if st.button('Fetch'):
