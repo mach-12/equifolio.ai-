@@ -32,16 +32,24 @@ with st.container():
   tickerSymbol = st.selectbox('Stock ticker', ticker_list) # Select ticker symbol
 
 if st.button('Fetch'):
+
   tickerData = yf.Ticker(tickerSymbol) # Get ticker data
   tickerDf = tickerData.history(period='1d', start=start_date, end=end_date) #get the historical prices for this ticker
-  
+  st.markdown('---')
+
   # Ticker information
-  string_logo = '<img src=%s>' % tickerData.info['logo_url']
-  st.markdown(string_logo, unsafe_allow_html=True)
+  col3, col4 = st.columns([1, 4], gap='small')
+
+  with col3:
+    string_logo = '<img src=%s>' % tickerData.info['logo_url']
+    st.markdown(string_logo, unsafe_allow_html=True)
   
-  string_name = tickerData.info['longName']
-  st.header('**%s**' % string_name)
-  
+  with col4:
+    string_name = tickerData.info['longName']
+    st.header('**%s**' % string_name)
+
+  st.markdown('')
+
   string_summary = tickerData.info['longBusinessSummary']
   st.info(string_summary)
   
@@ -54,9 +62,6 @@ if st.button('Fetch'):
   qf=cf.QuantFig(tickerDf,title='First Quant Figure',legend='top',name='GS')
   qf.add_bollinger_bands()
   fig = qf.iplot(asFigure=True)
-  st.plotly_chart(fig)
+  st.plotly_chart(fig, theme='streamlit')
 
 
-####
-#st.write('---')
-#st.write(tickerData.info)
