@@ -23,8 +23,9 @@ st.markdown("---")
 # Sidebar
 with st.container():
   st.subheader('Query parameters')
-  start_date = st.date_input("Start date", datetime.date(2019, 1, 1))
-  end_date = st.date_input("End date", datetime.date(2021, 1, 31))
+  start_date = st.date_input("Start date", datetime.date(2010, 1, 1))
+  today = str(datetime.date.today()).split('-')
+  end_date = st.date_input("End date", datetime.date(int(today[0]), int(today[1]), int(today[2])))
 
 # Retrieving tickers data
   ticker_list = pd.read_csv('https://github.com/mach-12/equifolio.ai-/blob/main/data/img/Stocks.csv?raw=True')

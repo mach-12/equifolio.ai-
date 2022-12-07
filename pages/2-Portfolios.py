@@ -197,7 +197,6 @@ with st.expander("More info"):
     port_val1 = st.number_input("Enter investment amount: ", min_value=0, max_value=100000000, step=10000)
     if st.button('Generate Portfolio'):
         port = generate_portfolio(port_val1, 2)
-        # st.write()
         st.write(port)
     st.image("https://github.com/mach-12/equifolio.ai-/blob/main/data/img/deep_blue.png?raw=True")
 
@@ -210,7 +209,7 @@ with st.expander("More info"):
     
     port_val2 = st.number_input("Enter investment amount:", min_value=0, max_value=100000000, step=10000)
     if st.button('Generate Portfolio '):
-        port = generate_portfolio(port_val2, 2)
+        port = generate_portfolio(port_val2, 1)
         # st.write()
         st.write(port)
 
