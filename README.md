@@ -1,4 +1,5 @@
 # equifolio.ai
+Project made by [Mann Dharmesh Acharya](https://github.com/mach-12) and [Arpan Sethi](https://github.com/arpansethi30) 
 #### Video Demo:  https://youtu.be/sa3kFrvjVvY
 #### Description: Equity Portfolio Optimization and generation  
 
