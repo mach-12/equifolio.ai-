@@ -5,14 +5,15 @@ Project made by [Mann Dharmesh Acharya](https://github.com/mach-12) and [Arpan S
 
 # How to run the project
 Commands to run this project:
-~ pipenv shell
-~ streamlit run 1-EquiFolio.py
+` pipenv shell `
+
+` streamlit run 1-EquiFolio.py `
 
 Incase a dependency is missing, try:
-~ pipenv install
+~ pipenv install ~
 
 # Requirements
-streamlit 
+``streamlit 
 pandas 
 scikit-learn 
 numpy 
@@ -21,7 +22,7 @@ yfinance
 matplotlib 
 streamlit-option-menu 
 pyportfolioopt 
-cufflinks
+cufflinks``
 
 # Background
 Public investment instocks and mutual funds has seen a steady rise in India.
