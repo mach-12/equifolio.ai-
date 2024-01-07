@@ -1,0 +1,12 @@
+streamlit
+pandas
+scikit-learn
+numpy
+black
+yfinance
+matplotlib
+streamlit-option-menu
+pyportfolioopt
+cufflinks
+pexpect
+matplotlib

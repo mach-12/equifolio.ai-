@@ -1,173 +1,169 @@
-import streamlit as st
 import pandas as pd
 import numpy as np
-from streamlit_option_menu import option_menu
-from PIL import Image
+import streamlit as st
+
+from sklearn.cluster import KMeans
+
 from datetime import datetime
 import matplotlib.pyplot as plt
+
 import yfinance as yf
-from sklearn.cluster import KMeans
-from sklearn import preprocessing
-import sklearn.cluster as cluster
-import sklearn.metrics as metrics
 from pypfopt.efficient_frontier import EfficientFrontier
 from pypfopt import risk_models 
 from pypfopt import expected_returns
 from pypfopt. discrete_allocation import DiscreteAllocation, get_latest_prices
 
 
-def optimize(port_value, option):
-  assets = []
-  index= ""
+def plot_clusters(kmeans_input):
+    labels, X = kmeans_input
 
-  if (option==1):
-    index='^NSEMDCP50'
-    assets = ['ABB.NS', 'AUBANK.NS', 'ABBOTINDIA.NS', 'ALKEM.NS', 'ASHOKLEY.NS', 'ASTRAL.NS', 'AUROPHARMA.NS', 'BALKRISIND.NS', 'BATAINDIA.NS', 'BHARATFORG.NS', 'CANBK.NS', 'COFORGE.NS', 'CONCOR.NS', 'CUMMINSIND.NS', 'ESCORTS.NS', 'FEDERALBNK.NS', 'GODREJPROP.NS', 'GUJGASLTD.NS', 'HINDPETRO.NS', 'HONAUT.NS', 'IDFCFIRSTB.NS', 'INDHOTEL.NS', 'JINDALSTEL.NS', 'JUBLFOOD.NS', 'LTTS.NS', 'LICHSGFIN.NS', 'LUPIN.NS', 'MRF.NS', 'M&MFIN.NS', 'MFSL.NS', 'OBEROIRLTY.NS', 'OFSS.NS', 'PAGEIND.NS', 'PERSISTENT.NS', 'PETRONET.NS', 'POLYCAB.NS', 'PFC.NS', 'PNB.NS', 'RECLTD.NS', 'SRTRANSFIN.NS', 'SAIL.NS', 'TVSMOTOR.NS', 'TATACOMM.NS', 'TORNTPOWER.NS', 'TRENT.NS', 'UBL.NS', 'IDEA.NS', 'VOLTAS.NS', 'ZEEL.NS', 'ZYDUSLIFE.NS']
+    # Create a scatter plot for clusters
+    fig, ax = plt.subplots()
+    scatter = ax.scatter(X[:, 0], X[:, 1], c=labels, cmap='rainbow')
+    plt.title('K-Means Plot')
+    plt.xlabel('Returns')
+    plt.ylabel('Variances')
+    legend1 = ax.legend(*scatter.legend_elements(), title="Clusters")
+    ax.add_artist(legend1)
+    st.pyplot(fig)
 
-  if (option==2):
-    index='^NSEI'
-    assets = ['ADANIENT.NS', 'ADANIPORTS.NS', 'APOLLOHOSP.NS', 'ASIANPAINT.NS', 'AXISBANK.NS', 'BAJAJ-AUTO.NS', 'BAJFINANCE.NS', 'BAJAJFINSV.NS', 'BPCL.NS', 'BHARTIARTL.NS', 'BRITANNIA.NS', 'CIPLA.NS', 'COALINDIA.NS', 'DIVISLAB.NS', 'DRREDDY.NS', 'EICHERMOT.NS', 'GRASIM.NS', 'HCLTECH.NS', 'HDFCBANK.NS', 'HDFCLIFE.NS', 'HEROMOTOCO.NS', 'HINDALCO.NS', 'HINDUNILVR.NS', 'HDFC.NS', 'ICICIBANK.NS', 'ITC.NS', 'INDUSINDBK.NS', 'INFY.NS', 'JSWSTEEL.NS', 'KOTAKBANK.NS', 'LT.NS', 'M&M.NS', 'MARUTI.NS', 'NTPC.NS', 'NESTLEIND.NS', 'ONGC.NS', 'POWERGRID.NS', 'RELIANCE.NS', 'SBILIFE.NS', 'SBIN.NS', 'SUNPHARMA.NS', 'TCS.NS', 'TATACONSUM.NS', 'TATAMOTORS.NS', 'TATASTEEL.NS', 'TECHM.NS', 'TITAN.NS', 'UPL.NS', 'ULTRACEMCO.NS', 'WIPRO.NS']
-  
-  # assets = ['AEGISCHEM.NS', 'AETHER.NS', 'ALLCARGO.NS', 'ALOKINDS.NS', 'AMARAJABAT.NS', 'AMBER.NS', 'ANGELONE.NS', 'ANURAS.NS', 'APOLLOTYRE.NS', 'BSE.NS', 'BAJAJELEC.NS', 'BALAMINES.NS', 'BALRAMCHIN.NS', 'MAHABANK.NS', 'BDL.NS', 'BIRLACORPN.NS', 'BSOFT.NS', 'BORORENEW.NS', 'BRIGADE.NS', 'BCG.NS', 'MAPMYINDIA.NS', 'CESC.NS', 'CAMPUS.NS', 'CANFINHOME.NS', 'CARBORUNIV.NS', 'CDSL.NS', 'CENTURYTEX.NS', 'CHAMBLFERT.NS', 'CHEMPLASTS.NS', 'CUB.NS', 'CAMS.NS', 'CREDITACC.NS', 'CYIENT.NS', 'DCMSHRIRAM.NS', 'DEEPAKFERT.NS', 'DELTACORP.NS', 'EIDPARRY.NS', 'EASEMYTRIP.NS', 'ELGIEQUIP.NS', 'EXIDEIND.NS', 'FINEORG.NS', 'FSL.NS', 'GLENMARK.NS', 'GRANULES.NS', 'GRAPHITE.NS', 'GNFC.NS', 'HFCL.NS', 'HINDCOPPER.NS', 'IDBI.NS', 'IDFC.NS', 'IIFL.NS', 'IRB.NS', 'IBULHSGFIN.NS', 'INDIGOPNTS.NS', 'INTELLECT.NS', 'JBCHEPHARM.NS', 'JSL.NS', 'JUBLINGREA.NS', 'JUSTDIAL.NS', 'KEI.NS', 'KPITTECH.NS', 'KEC.NS', 'LATENTVIEW.NS', 'LXCHEM.NS', 'LUXIND.NS', 'MMTC.NS', 'MGL.NS', 'MANAPPURAM.NS', 'MRPL.NS', 'MASTEK.NS', 'MEDPLUS.NS', 'METROBRAND.NS', 'METROPOLIS.NS', 'MCX.NS', 'NBCC.NS', 'NLCINDIA.NS', 'NETWORK18.NS', 'PVR.NS', 'POLYPLEX.NS', 'PRAJIND.NS', 'QUESS.NS', 'RBLBANK.NS', 'RADICO.NS', 'RAIN.NS', 'REDINGTON.NS', 'ROUTE.NS', 'SAPPHIRE.NS', 'RENUKA.NS', 'SOBHA.NS', 'STLTECH.NS', 'SUNTECK.NS', 'SUZLON.NS', 'TV18BRDCST.NS', 'TANLA.NS', 'TRIVENI.NS', 'UTIAMC.NS', 'VIPIND.NS', 'VTL.NS', 'WELSPUNIND.NS']
-  
-  assets.append(index)
+def plot_stock_portfolio(my_stocks):
+    # Create a line plot for stock/portfolio
+    fig, ax = plt.subplots()
+    for c in my_stocks.columns.values:
+        ax.plot(my_stocks[c], label=c)
+    plt.title('Portfolio Adj. Close Price History')
+    plt.xlabel('Date', fontsize=18)
+    plt.ylabel('Adj. Prize', fontsize=18)
+    plt.legend(my_stocks.columns.values, loc='upper left')
+    st.pyplot(fig)
 
-  stockStartDate='2013-01-01'
+def generate_portfolio(port_value, option):
+    # Initialize empty lists and variables
+    assets = []
+    index = ""
 
-  today = datetime.today().strftime('%Y-%m-%d')
+    plots = {'kmeans_plot':None, 'portfolio_plot':None}
 
+    # Define assets and index based on the selected option
+    if (option==1):
+      index='^NSEMDCP50'
+      assets = ['ABB.NS', 'AUBANK.NS', 'ABBOTINDIA.NS', 'ALKEM.NS', 'ASHOKLEY.NS', 'ASTRAL.NS', 'AUROPHARMA.NS', 'BALKRISIND.NS', 'BATAINDIA.NS', 'BHARATFORG.NS', 'CANBK.NS', 'COFORGE.NS', 'CONCOR.NS', 'CUMMINSIND.NS', 'ESCORTS.NS', 'FEDERALBNK.NS', 'GODREJPROP.NS', 'GUJGASLTD.NS', 'HINDPETRO.NS', 'HONAUT.NS', 'IDFCFIRSTB.NS', 'INDHOTEL.NS', 'JINDALSTEL.NS', 'JUBLFOOD.NS', 'LTTS.NS', 'LICHSGFIN.NS', 'LUPIN.NS', 'MRF.NS', 'M&MFIN.NS', 'MFSL.NS', 'OBEROIRLTY.NS', 'OFSS.NS', 'PAGEIND.NS', 'PERSISTENT.NS', 'PETRONET.NS', 'POLYCAB.NS', 'PFC.NS', 'PNB.NS', 'RECLTD.NS', 'SRTRANSFIN.NS', 'SAIL.NS', 'TVSMOTOR.NS', 'TATACOMM.NS', 'TORNTPOWER.NS', 'TRENT.NS', 'UBL.NS', 'IDEA.NS', 'VOLTAS.NS', 'ZEEL.NS', 'ZYDUSLIFE.NS']
 
-  df = yf.download(
-          tickers = assets,       # tickers list or string as well
-          start = stockStartDate,  
-          end = today    # optional, default is '1mo'
-  )    
+    if (option==2):
+      index='^NSEI'
+      assets = ['ADANIENT.NS', 'ADANIPORTS.NS', 'APOLLOHOSP.NS', 'ASIANPAINT.NS', 'AXISBANK.NS', 'BAJAJ-AUTO.NS', 'BAJFINANCE.NS', 'BAJAJFINSV.NS', 'BPCL.NS', 'BHARTIARTL.NS', 'BRITANNIA.NS', 'CIPLA.NS', 'COALINDIA.NS', 'DIVISLAB.NS', 'DRREDDY.NS', 'EICHERMOT.NS', 'GRASIM.NS', 'HCLTECH.NS', 'HDFCBANK.NS', 'HDFCLIFE.NS', 'HEROMOTOCO.NS', 'HINDALCO.NS', 'HINDUNILVR.NS', 'HDFC.NS', 'ICICIBANK.NS', 'ITC.NS', 'INDUSINDBK.NS', 'INFY.NS', 'JSWSTEEL.NS', 'KOTAKBANK.NS', 'LT.NS', 'M&M.NS', 'MARUTI.NS', 'NTPC.NS', 'NESTLEIND.NS', 'ONGC.NS', 'POWERGRID.NS', 'RELIANCE.NS', 'SBILIFE.NS', 'SBIN.NS', 'SUNPHARMA.NS', 'TCS.NS', 'TATACONSUM.NS', 'TATAMOTORS.NS', 'TATASTEEL.NS', 'TECHM.NS', 'TITAN.NS', 'UPL.NS', 'ULTRACEMCO.NS', 'WIPRO.NS']
+      
+    assets.append(index)
 
-  #  2.  Select 'Close' (price at market close) column only
-  df = df.iloc[:, df.columns.get_level_values(0)=='Adj Close']
+    stockStartDate='2013-01-01'
 
+    today = datetime.today().strftime('%Y-%m-%d')
 
-  #  3.  Remove the dataframe multi-index
-  df.columns = df.columns.droplevel(0)  # multi-index
+    # Download stock data using Yahoo Finance
+    df = yf.download(
+        tickers=assets,
+        start=stockStartDate,
+        end=today
+    )
 
-  daily_returns = df.pct_change()
-  annual_mean_returns = daily_returns.mean()*250
-  annual_return_variance = daily_returns.var()*250
+    # Drop NaN values and focus on 'Adj Close' columns
+    df = df.dropna(axis=1)
+    df = df.iloc[:, df.columns.get_level_values(0) == 'Adj Close']
+    df.columns = df.columns.droplevel(0)
 
-  df2 = pd.DataFrame(df.columns, columns=['Stock'])
-  df2['Variances'] = annual_return_variance.values
-  df2['Returns'] = annual_mean_returns.values
+    # Calculate daily returns, mean annual returns, and annual return variance
+    daily_returns = df.pct_change()
+    annual_mean_returns = daily_returns.mean() * 250
+    annual_return_variance = daily_returns.var() * 250
 
+    # Create a DataFrame for storing returns and variances
+    df2 = pd.DataFrame(df.columns, columns=['Stock'])
+    df2['Variances'] = annual_return_variance.values
+    df2['Returns'] = annual_mean_returns.values
 
-  #Use the Elbow method to determine the number of clusters to use to group the stocks
-  #Get and store the annual returns and annual variances
-  X = df2[ ['Returns', 'Variances' ]].values
-  inertia_list = []
-  for k in range (2,16):
-    #Create and train the model
-    kmeans = KMeans(n_clusters=k)
-    kmeans.fit(X)
-    inertia_list.append (kmeans. inertia_)
-    #Plot the data plt.plot (range(2,16), inertia _list)
-  plt.plot (range (2,16), inertia_list) 
-  plt.title( 'Elbow Curve') 
-  plt.xlabel('Number of Clusters') 
-  plt.ylabel ('Inertia or sum square error')
-  # plt.show
+    # Clustering based on returns and variances
+    X = df2[['Returns', 'Variances']].values
+    inertia_list = [] # within-cluster sum of squares
+    for k in range(2, 16):
+        kmeans = KMeans(n_clusters=k)
+        kmeans.fit(X)
+        inertia_list.append(kmeans.inertia_)
+    
+    # Calculating Optimal Clusters
+    diff = [inertia_list[i] - inertia_list[i - 1] for i in range(1, len(inertia_list))]
+    optimal_clusters = diff.index(min(diff)) + 3
+    print("Number of Clusters = ", optimal_clusters)
+    
+    # Clustering
+    kmeans = KMeans(n_clusters=optimal_clusters).fit(X)
+    labels = kmeans.labels_
+    df2['Cluster_Labels'] = labels
 
-  #Get and show the labels / groups
-  kmeans = KMeans(n_clusters=3).fit(X)
-  labels = kmeans.labels_
+    plots['kmeans_plot'] = [labels, X] # Adding K-means plot  
 
+    # Display stocks grouped by cluster
+    for i in range(0, 3):
+        symbol = df2[df2['Cluster_Labels'] == i].head()
+        print(symbol[['Stock', 'Cluster_Labels']])
 
-  df2['Cluster_Labels'] = labels
+    # Filtering stocks from a particular cluster
+    finallist = df2[df2['Cluster_Labels'] != 0].reset_index(drop=False)
+    finallist = [i[0] for i in finallist[['Stock']].values.tolist()]
+    weights = np.array([1 / len(finallist) for i in range(len(finallist))])
 
+    # Download filtered stock data
+    df = yf.download(
+        tickers=finallist,
+        start=stockStartDate,
+        end=today
+    )
 
-  #Plot and show the different clusters
-  plt.scatter(X[:, 0], X[:, 1], c = labels, cmap='rainbow') 
-  plt.title('K-Means Plot' ) 
-  plt.xlabel('Returns') 
-  plt.ylabel('Variances')
-  plt.legend(labels)
-  # plt.show()
+    df = df.iloc[:, df.columns.get_level_values(0) == 'Adj Close']
+    df.columns = df.columns.droplevel(0)
 
-  for i in range(0,3):
-    symbol=df2[df2['Cluster_Labels']==i].head()
-    print(symbol[['Stock','Cluster_Labels']])
+    plots['portfolio_plot'] = df # add to plot var
 
-  finallist = df2[df2['Cluster_Labels'] != 0].reset_index(drop=False)
+    # Calculate returns and covariance matrix
+    returns = df.pct_change()
+    cov_matrix_annual = returns.cov() * 250
 
-  finallist = [i[0] for i in finallist[['Stock']].values.tolist()]
+    # Calculate portfolio metrics
+    port_variance = np.dot(weights.T, np.dot(cov_matrix_annual, weights))
+    port_volatility = np.sqrt(port_variance)
+    portfolioSimpleAnnualReturn = np.sum(returns.mean() * weights) * 250
 
-  weights=np.array([1/len(finallist) for i in range(len(finallist))])
+    # Log portfolio statistics
+    percent_var = str(round(port_variance, 2) * 100) + '%'
+    percent_vol = str(round(port_volatility, 2) * 100) + '%'
+    percent_ret = str(round(portfolioSimpleAnnualReturn, 2) * 100) + '%'
+    
+    print('Expected annual return' + percent_ret)
+    print('Annual volatility/risk' + percent_vol)
+    print('Annual Variance' + percent_var)
 
-  df = yf.download(
-          tickers = finallist,       # tickers list or string as well
-          start = stockStartDate,  
-          end = today    # optional, default is '1mo'
-  )    
+    portfolio_stats = {
+        'expected-annual-return': percent_ret,
+        'annual-volatility-risk': percent_vol,
+        'annual-variance': percent_var
+    }
 
-  #  2.  Select 'Close' (price at market close) column only
-  df = df.iloc[:, df.columns.get_level_values(0)=='Adj Close']
+    # Calculate expected returns and covariance matrix for portfolio optimization
+    mu = expected_returns.mean_historical_return(df)
+    s = risk_models.sample_cov(df)
+    ef = EfficientFrontier(mu, s)
+    weights = ef.max_sharpe()
+    cleaned_weights = ef.clean_weights()
+    print(cleaned_weights)
+    ef.portfolio_performance(verbose=True)
 
+    # Calculate and display discrete allocation of portfolio
+    latest_prices = get_latest_prices(df)
+    weights = cleaned_weights
+    da = DiscreteAllocation(weights, latest_prices, total_portfolio_value=port_value)
+    allocation, leftover = da.lp_portfolio()
+    print('Discrete allocation:', allocation)
+    print('Funds remaining: {:.2f}'.format(leftover))
+    print(latest_prices)
+    return {'allocation': allocation, 'stats': portfolio_stats, 'plots': plots}
 
-  #  3.  Remove the dataframe multi-index
-  df.columns = df.columns.droplevel(0)  # multi-index
-
-
-
-  #Visually show stock/portfolio
-  title='Portfolio Adj. Close Price History'
-  #Get the stocks
-  my_stocks = df
-  for c in my_stocks.columns.values:
-    plt.plot(my_stocks[c],label=c)
-  plt.title(title)
-  plt.xlabel('Date', fontsize =18)
-  plt.ylabel('Adj. Prize', fontsize=18)
-  plt.legend(my_stocks.columns.values, loc='upper left')
-  # plt.show()
-
-  #Show the daily simple returns
-  returns = df.pct_change()
-
-
-  #CoVariance Matrix
-  cov_matrix_annual = returns.cov()*250
-
-
-  port_variance = np.dot(weights.T,np.dot(cov_matrix_annual,weights))
-
-
-  port_volatility=np.sqrt(port_variance)
-
-  #Calculating the anual portfolio return
-  portfolioSimpleAnnualReturn = np.sum(returns.mean()*weights) * 250
-
-
-  percent_var = str(round(port_variance,2)*100)+'%'
-  percent_vol = str(round(port_volatility,2)*100)+'%'
-  percent_ret = str(round(portfolioSimpleAnnualReturn,2)*100)+'%'
-  ('Expected annual return'+percent_ret)
-  print('Annual volatility/risk'+percent_vol)
-  print('Annual Variance'+percent_var)
-
-
-  #Portfolio Optimization 
-  #Calculate the expected returns and the annualised sample covariance matrix of asset returns
-  mu = expected_returns. mean_historical_return(df)
-  s = risk_models.sample_cov(df)
-  #optimize for max sharpe ratio
-  ef = EfficientFrontier (mu, s)
-  weights = ef.max_sharpe()
-  cleaned_weights = ef.clean_weights()
-  print(cleaned_weights)
-  ef.portfolio_performance(verbose=True)
-
-  latest_prices = get_latest_prices(df)
-  weights = cleaned_weights
-  da = DiscreteAllocation(weights, latest_prices, total_portfolio_value = port_value) # Should be taken by users
-  allocation, leftover = da.lp_portfolio()
-  print('Discrete allocation:', allocation)
-  print('Funds remaining: {:.2f}'.format(leftover))
-  return allocation['Discrete allocation']

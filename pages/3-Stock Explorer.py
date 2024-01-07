@@ -39,7 +39,6 @@ if st.button('Fetch'):
 
   # Ticker information
   col3, col4 = st.columns([1, 4], gap='small')
-
   
   with col4:
     string_name = tickerData.info['longName']
