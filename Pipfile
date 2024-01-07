@@ -14,6 +14,7 @@ matplotlib = "*"
 streamlit-option-menu = "*"
 pyportfolioopt = "*"
 cufflinks= "*"
+pexpect = "*"
 
 [dev-packages]
 
