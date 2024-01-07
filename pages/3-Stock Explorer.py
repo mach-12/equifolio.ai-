@@ -38,11 +38,8 @@ if st.button('Fetch'):
   st.markdown('---')
 
   # Ticker information
-  col3, col4 = st.columns([1, 4], gap='small')
-  
-  with col4:
-    string_name = tickerData.info['longName']
-    st.header('**%s**' % string_name)
+  string_name = tickerData.info['longName']
+  st.header('**%s**' % string_name)
 
   st.markdown('')
 
@@ -51,7 +48,7 @@ if st.button('Fetch'):
   
   # Ticker data
   st.header('**Ticker data**')
-  st.write(tickerDf)
+  st.write(tickerDf.iloc[::-1, :])
   
   # Bollinger bands
   st.header('**Bollinger Band Chart**')

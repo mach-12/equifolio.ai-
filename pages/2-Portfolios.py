@@ -14,9 +14,11 @@ def display_portfolio(data):
     
     # Create an interactive pie chart
     fig = px.pie(allocation_df, values='Allocation', names='Stock', title='Allocation', 
-                 labels={'Stock': 'Stocks'}, 
-                 hover_data={'Allocation': ':.1f%'},
+                labels={'Stock': 'Stocks'}, 
+                hover_data={'Allocation': ':.1f%'},
     )
+
+    fig.update_layout(width=500, height=400)
     
     # Display the interactive chart
     st.plotly_chart(fig)
@@ -38,8 +40,6 @@ def display_portfolio(data):
     plot_clusters(data['plots']['kmeans_plot'])
     plot_stock_portfolio(data['plots']['portfolio_plot'])
 
-      
-        
  
 st.set_page_config(
     page_title="EQUIFOLIO.AI"
