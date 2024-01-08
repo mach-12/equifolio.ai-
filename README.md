@@ -1,84 +1,102 @@
-# equifolio.ai
-Project made by [Mann Dharmesh Acharya](https://github.com/mach-12) and [Arpan Sethi](https://github.com/arpansethi30) 
-#### Video Demo:  https://youtu.be/sa3kFrvjVvY
-#### Description: Equity Portfolio Optimization and generation  
+# EquiFolio.ai: 📈 Equity Portfolio Optimization and Generation  
+![image](https://github.com/mach-12/equifolio.ai-/assets/89384052/ed53b9ed-bf29-4e08-9349-b3267556aa28)
 
-# How to run the project
-Commands to run this project:
-` pipenv shell `
+## ⭐⭐ Winning Project at First Project Showcase, Benentt University (Runner-Up)
 
-` streamlit run 1-EquiFolio.py `
+### Deployed Project: https://equifolio-ai.streamlit.app/
 
-Incase a dependency is missing, try:
-~ pipenv install ~
+Developed by [Mann Dharmesh Acharya](https://github.com/mach-12) and [Arpan Sethi](https://github.com/arpansethi30) 
 
-# Requirements
-``streamlit 
-pandas 
-scikit-learn 
-numpy 
-black 
-yfinance 
-matplotlib 
-streamlit-option-menu 
-pyportfolioopt 
-cufflinks``
 
-# Background
-Public investment instocks and mutual funds has seen a steady rise in India.
-There is a need for a consumer product which can help people make diversified portfolios.
 
-In this project, we have developed a product which enables users naïve to the stock market,to create portfolios with good long time returns based on the user's needs. 
+### Video Demo
+https://github.com/mach-12/equifolio.ai-/assets/89384052/6bf234a4-c13a-47d4-868a-8c03cfbdcb44
 
-Historical stock data of 10 year period was taken from the NSE NIFTY indices. 
 
-Using ML models, We predict one-year ahead fund return and performance.
-We construct a time series of monthly returns and then rank the top stocks. 
+## Table of Contents
+- [Background](#background)
+- [ML Algorithm](#ml-algorithm)
+- [Instructions to Run](#instructions-to-run)
+- [Requirements](#requirements)
+- [Description of Project](#description-of-project)
+- [Contributions and Attritions](#contributions-and-attritions)
 
-The ranking also considers the fundamentals of the stocks: P/E Ratio, Revenue Growth.
+## Background
+📊 Public investment in stocks and mutual funds has been steadily rising in India. This project addresses the need for a product that assists users in creating diversified portfol
+ios, especially those new to the stock market. We've developed a tool that uses historical stock data from the NSE NIFTY indices to enable users to construct portfolios with potentially good long-term returns.
 
-The total portfolio value is then distributed in a way as to optimise the reutrn of the portfolio.
-This is done based on Risk, Annual Variance, and Annual Return.
 
-# Project Structure
-The proeject consists of Four Pages:
-1) Homepage
-2) Portfolios
-3) Stock Explorer
-4) Pricing
+## ML Algorithm
 
-# 1) Homepage
-We descibe the viability of our project and explain it to a new user visiting the website.
-There is a investment return calculator included which demonstrates the advantage of equity stock investing over bank fixed deposits.
-The 4% withdrawl rule is also applied, yet the returns are soaringly good on investing on the index.
+- **Input** is investment amount and the Stock Index of choice. 10 year historical stock data is retrieved using  `yfinance`.
 
-# 2) Portfolios
-This is the main part of the project. I have created two portfolios according to risk levels:
-1) Deep Blue
-2) Dynamic Green
+- Calculating returns and variances, it utilizes **K-means clustering** to group stocks, determining an optimal number of clusters and filtering a portfolio based on these clusters.
 
-1) Deep Blue
-This low-risk portfolio carry minimal risk and a stable return assurance. These portfolios are always a step ahead of inflation.
-Choosing the best low risk stocks can help stabilise the risk-reward ratio in an investor’s portfolio.
+- We then compute portfolio metrics like **variance**, **volatility**, and expected annual return for the filtered portfolio. Further optimization is performed using the `Efficient Frontier` module to maximize the **Sharpe ratio** and find optimal weights for the selected stocks.
+  
+- Finally, using these optimized weights and current stock prices, we perform a **discrete allocation**, determining the allocation of funds across these stocks for a specified total portfolio value.
+  
+- The **Output** includes the allocation details, portfolio statistics, and visual plots illustrating the clustering and portfolio's adjusted close prices.
+  
+## Instructions to Run
+To run this project, follow these commands:
 
-2) Dynamic Green
-This moderate-risk portfolio exposes investors’ capital to only average levels of risk.
-The portfolio invests capital in varied equities to maintain reasonable market risks against inflation-adjusted returns.
+- Install Requirements
+```bash
+pip install pipenv
+pipenv install -r requirements.txt
+```
 
-I take user input of the amount of capital they want to invest.
+- Run project
+```bash
+pipenv shell
+streamlit run 1-EquiFolio.py
+```
 
-I picked NSE stock data using the Yahoo Finance API and then passed them into my ML model.
-- The ML model consists of a clsutering algorithm that takes the Volatility and Returns of stocks and groups them into different clusters.
-- I then pick stocks form each cluster in a way to maximise the Sharpie Ratio
-- Weights are assigned to the selected stocks.
-- Then by using the current market price, we buy stocks based on the amount available for spending.
-- The result is obtained stocks and share amount to buy.
+## Requirements
 
-# 3) Stock Explorer
-The stock Explorer can display various data for a selected stock ticker.
-Selected the range of dates and stock symbol.
-You can see the company logo, descrption, Daily stock data of High-Low, and Bolinger band stock charts.
+```bash
+pandas
+numpy
+yfinance
+cufflinks
+matplotlib
+scikit-learn
+pyportfolioopt
+streamlit
+streamlit-option-menu
+black
+pexpect
+```
 
-# 4) Pricing
-The final product will charge a one time fee to generate a portfolio. The fee is described in this page.
+## Description of Project
+The project comprises four primary pages:
 
+### 1) Homepage
+
+- Provides an overview of the project's viability. Features an investment return calculator illustrating the advantages of equity stock investment compared to bank fixed deposits. Incorporates the 4% withdrawal rule, showcasing substantial returns on index fund investments.
+
+### 2) Portfolios
+   
+- This section encompasses two distinct portfolios based on risk levels: **Deep Blue** and **Dynamic Green** which pick stocks from different Indices.
+
+ ### 3) Stock Explorer
+   
+- The Stock Explorer segment offers various data representations for a selected stock ticker. Users can specify date ranges and stock symbols to view: Company description, Daily stock data, including High-Low values and Bollinger band stock charts
+
+ ### 4) Pricing
+
+- How much it cost to create a portfolio. Giving a business perspective to the project.
+
+
+## Contributions and Attritions 
+This project is freely available for use in any manner. 
+
+Contributions are welcome and encouraged!
+
+Feel free to utilize this project for your needs, and if used or distributed, kindly attribute it this way:
+
+```
+EquiFolio.ai by Mann Acharya
+Repository: https://github.com/mach-12/equifolio.ai-
+```
