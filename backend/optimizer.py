@@ -81,7 +81,7 @@ def generate_portfolio(port_value, option):
     annual_return_variance = daily_returns.var() * 250
 
     # Create a DataFrame for storing returns and variances
-    df2 = pd.DataFrame(df.columns, columns=['Stock'])
+    df2 = pd.DataFrame(df.columns, columns=['Ticker'])
     df2['Variances'] = annual_return_variance.values
     df2['Returns'] = annual_mean_returns.values
 
@@ -107,12 +107,15 @@ def generate_portfolio(port_value, option):
 
     # Display stocks grouped by cluster
     for i in range(0, 3):
-        symbol = df2[df2['Cluster_Labels'] == i].head()
-        print(symbol[['Stock', 'Cluster_Labels']])
+        DDF = df.to_dict()
+        test_df = df2.to_dict()
+        symbol = df2[df2['Cluster_Labels'] == i]
+        test = symbol.to_dict()
+        print(symbol[['Ticker', 'Cluster_Labels']])
 
     # Filtering stocks from a particular cluster
     finallist = df2[df2['Cluster_Labels'] != 0].reset_index(drop=False)
-    finallist = [i[0] for i in finallist[['Stock']].values.tolist()]
+    finallist = [i[0] for i in finallist[['Ticker']].values.tolist()]
     weights = np.array([1 / len(finallist) for i in range(len(finallist))])
 
     # Download filtered stock data
